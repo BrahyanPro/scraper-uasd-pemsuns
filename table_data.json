@@ -1,0 +1,502 @@
+[
+  {
+    "semester": "Primer Semestre",
+    "clave": "ART-1100",
+    "asignatura": "Taller De Educación Estética",
+    "ht": "3",
+    "hp": "3",
+    "cr": "4",
+    "prerequisitos": "",
+    "equivalencias": "CRI1100"
+  },
+  {
+    "semester": "Primer Semestre",
+    "clave": "ART-1130",
+    "asignatura": "Historia Del Arte I",
+    "ht": "3",
+    "hp": "0",
+    "cr": "3",
+    "prerequisitos": "",
+    "equivalencias": "CRI1130"
+  },
+  {
+    "semester": "Primer Semestre",
+    "clave": "ART-1270",
+    "asignatura": "Dibujo I",
+    "ht": "2",
+    "hp": "4",
+    "cr": "4",
+    "prerequisitos": "",
+    "equivalencias": "PLA1270"
+  },
+  {
+    "semester": "Primer Semestre",
+    "clave": "DOP-1000",
+    "asignatura": "Orientación Institucional",
+    "ht": "1",
+    "hp": "0",
+    "cr": "1",
+    "prerequisitos": "",
+    "equivalencias": "DOP0100, OSI0310, OSI1000, PED3110, TEG3110"
+  },
+  {
+    "semester": "Primer Semestre",
+    "clave": "HIS-0110",
+    "asignatura": "Fund De His Social Dominicana",
+    "ht": "3",
+    "hp": "0",
+    "cr": "3",
+    "prerequisitos": "",
+    "equivalencias": "HIS1100"
+  },
+  {
+    "semester": "Primer Semestre",
+    "clave": "LET-0110",
+    "asignatura": "Lengua Española Básica I",
+    "ht": "3",
+    "hp": "1",
+    "cr": "3",
+    "prerequisitos": "",
+    "equivalencias": "LET0130, LET0150"
+  },
+  {
+    "semester": "Primer Semestre",
+    "clave": "SOC-0100",
+    "asignatura": "Introd A Las Ciencias Sociales",
+    "ht": "3",
+    "hp": "0",
+    "cr": "3",
+    "prerequisitos": "",
+    "equivalencias": "ICS0110, SOC0120"
+  },
+  {
+    "semester": "Primer Semestre",
+    "clave": "",
+    "asignatura": "",
+    "ht": "18",
+    "hp": "8",
+    "cr": "21",
+    "prerequisitos": "",
+    "equivalencias": ""
+  },
+  {
+    "semester": "Segundo Semestre",
+    "clave": "ART-1170",
+    "asignatura": "His Del Arte Dominicano I",
+    "ht": "3",
+    "hp": "0",
+    "cr": "3",
+    "prerequisitos": "HIS0110, ART1140 / CRI1140",
+    "equivalencias": "ART2130, ART2180, CRI1170"
+  },
+  {
+    "semester": "Segundo Semestre",
+    "clave": "ART-1290",
+    "asignatura": "Dibujo II",
+    "ht": "2",
+    "hp": "4",
+    "cr": "4",
+    "prerequisitos": "ART1270 / ARQ1910 / ART1210 / PLA1270",
+    "equivalencias": "PLA1290"
+  },
+  {
+    "semester": "Segundo Semestre",
+    "clave": "ART-3210",
+    "asignatura": "Pintura I",
+    "ht": "2",
+    "hp": "3",
+    "cr": "3",
+    "prerequisitos": "",
+    "equivalencias": "PLA3210"
+  },
+  {
+    "semester": "Segundo Semestre",
+    "clave": "ART-3270",
+    "asignatura": "Escultura I",
+    "ht": "2",
+    "hp": "3",
+    "cr": "3",
+    "prerequisitos": "",
+    "equivalencias": "PLA3270"
+  },
+  {
+    "semester": "Segundo Semestre",
+    "clave": "FIL-0110",
+    "asignatura": "Int A La Filosofía",
+    "ht": "3",
+    "hp": "0",
+    "cr": "3",
+    "prerequisitos": "",
+    "equivalencias": ""
+  },
+  {
+    "semester": "Segundo Semestre",
+    "clave": "LET-0120",
+    "asignatura": "Lengua Española Básica II",
+    "ht": "3",
+    "hp": "1",
+    "cr": "3",
+    "prerequisitos": "LET0110 / LET0130 / LET0150",
+    "equivalencias": "LET0130, LET0160"
+  },
+  {
+    "semester": "Segundo Semestre",
+    "clave": "",
+    "asignatura": "",
+    "ht": "15",
+    "hp": "11",
+    "cr": "19",
+    "prerequisitos": "",
+    "equivalencias": ""
+  },
+  {
+    "semester": "Tercer Semestre",
+    "clave": "ART-2110",
+    "asignatura": "Estética I",
+    "ht": "3",
+    "hp": "0",
+    "cr": "3",
+    "prerequisitos": "FIL0110",
+    "equivalencias": "CRI2110"
+  },
+  {
+    "semester": "Tercer Semestre",
+    "clave": "ART-2190",
+    "asignatura": "Teoría De Las Artes Visuales",
+    "ht": "3",
+    "hp": "0",
+    "cr": "3",
+    "prerequisitos": "ART2110 / (ART2110) / CRI2110 / (CRI2110)",
+    "equivalencias": "CRI2190"
+  },
+  {
+    "semester": "Tercer Semestre",
+    "clave": "ART-3010",
+    "asignatura": "Taller De Comp Artística",
+    "ht": "3",
+    "hp": "3",
+    "cr": "4",
+    "prerequisitos": "ART1290 / PLA1290",
+    "equivalencias": "PLA3010"
+  },
+  {
+    "semester": "Tercer Semestre",
+    "clave": "ART-3220",
+    "asignatura": "Pintura II",
+    "ht": "2",
+    "hp": "3",
+    "cr": "3",
+    "prerequisitos": "ART3210 / PLA3210",
+    "equivalencias": "PLA3220"
+  },
+  {
+    "semester": "Tercer Semestre",
+    "clave": "ART-3250",
+    "asignatura": "Dibujo III",
+    "ht": "2",
+    "hp": "3",
+    "cr": "3",
+    "prerequisitos": "ART1290 / PLA1290",
+    "equivalencias": "PLA3250"
+  },
+  {
+    "semester": "Tercer Semestre",
+    "clave": "ART-4280",
+    "asignatura": "Escultura II",
+    "ht": "2",
+    "hp": "4",
+    "cr": "4",
+    "prerequisitos": "ART3270 / PLA3270",
+    "equivalencias": "PLA4280"
+  },
+  {
+    "semester": "Tercer Semestre",
+    "clave": "",
+    "asignatura": "",
+    "ht": "15",
+    "hp": "13",
+    "cr": "20",
+    "prerequisitos": "",
+    "equivalencias": ""
+  },
+  {
+    "semester": "Cuarto Semestre",
+    "clave": "ART-3100",
+    "asignatura": "Arte Contemporáneo",
+    "ht": "3",
+    "hp": "1",
+    "cr": "3",
+    "prerequisitos": "",
+    "equivalencias": "CRI3100"
+  },
+  {
+    "semester": "Cuarto Semestre",
+    "clave": "ART-3260",
+    "asignatura": "Int A La Pintura Al Oleo",
+    "ht": "2",
+    "hp": "3",
+    "cr": "3",
+    "prerequisitos": "",
+    "equivalencias": "PLA3260"
+  },
+  {
+    "semester": "Cuarto Semestre",
+    "clave": "ART-4210",
+    "asignatura": "Técnicas Pictóricas",
+    "ht": "2",
+    "hp": "2",
+    "cr": "3",
+    "prerequisitos": "",
+    "equivalencias": "PLA4210"
+  },
+  {
+    "semester": "Cuarto Semestre",
+    "clave": "ART-4250",
+    "asignatura": "Pintura III",
+    "ht": "3",
+    "hp": "3",
+    "cr": "4",
+    "prerequisitos": "",
+    "equivalencias": "PLA4250"
+  },
+  {
+    "semester": "Cuarto Semestre",
+    "clave": "ART-4260",
+    "asignatura": "Dibujo IV",
+    "ht": "2",
+    "hp": "3",
+    "cr": "3",
+    "prerequisitos": "ART3250 / PLA3250",
+    "equivalencias": "PLA4260"
+  },
+  {
+    "semester": "Cuarto Semestre",
+    "clave": "FIL-1240",
+    "asignatura": "Metodología De La Inv Cientif",
+    "ht": "3",
+    "hp": "0",
+    "cr": "3",
+    "prerequisitos": "FIL0110",
+    "equivalencias": ""
+  },
+  {
+    "semester": "Cuarto Semestre",
+    "clave": "",
+    "asignatura": "",
+    "ht": "15",
+    "hp": "12",
+    "cr": "19",
+    "prerequisitos": "",
+    "equivalencias": ""
+  },
+  {
+    "semester": "Quinto Semestre",
+    "clave": "ART-2140",
+    "asignatura": "Teoría Y Crítica Del Arte",
+    "ht": "3",
+    "hp": "0",
+    "cr": "3",
+    "prerequisitos": "ART3100 / CRI3100",
+    "equivalencias": "CRI2140"
+  },
+  {
+    "semester": "Quinto Semestre",
+    "clave": "ART-3130",
+    "asignatura": "Historia Del Arte Latinoamer",
+    "ht": "3",
+    "hp": "0",
+    "cr": "3",
+    "prerequisitos": "",
+    "equivalencias": "CRI3130"
+  },
+  {
+    "semester": "Quinto Semestre",
+    "clave": "ART-4100",
+    "asignatura": "Semiología Del Arte",
+    "ht": "3",
+    "hp": "0",
+    "cr": "3",
+    "prerequisitos": "",
+    "equivalencias": "CRI4100"
+  },
+  {
+    "semester": "Quinto Semestre",
+    "clave": "ART-4220",
+    "asignatura": "Pintura De Paisaje",
+    "ht": "2",
+    "hp": "4",
+    "cr": "4",
+    "prerequisitos": "ART3260 / PLA3260",
+    "equivalencias": "PLA4220"
+  },
+  {
+    "semester": "Quinto Semestre",
+    "clave": "ART-4230",
+    "asignatura": "Grabado I",
+    "ht": "2",
+    "hp": "2",
+    "cr": "3",
+    "prerequisitos": "ART3250 / PLA3250",
+    "equivalencias": "PLA4230"
+  },
+  {
+    "semester": "Quinto Semestre",
+    "clave": "ART-4270",
+    "asignatura": "Dibujo Del Natural I",
+    "ht": "3",
+    "hp": "3",
+    "cr": "4",
+    "prerequisitos": "",
+    "equivalencias": "PLA4270"
+  },
+  {
+    "semester": "Quinto Semestre",
+    "clave": "ART-5210",
+    "asignatura": "Taller Creativo I",
+    "ht": "3",
+    "hp": "4",
+    "cr": "4",
+    "prerequisitos": "ART4250 / PLA4250, ART4220 / (ART4220) / PLA4220 / (PLA4220)",
+    "equivalencias": "PLA5210"
+  },
+  {
+    "semester": "Quinto Semestre",
+    "clave": "",
+    "asignatura": "",
+    "ht": "19",
+    "hp": "13",
+    "cr": "24",
+    "prerequisitos": "",
+    "equivalencias": ""
+  },
+  {
+    "semester": "Sexto Semestre",
+    "clave": "ART-3170",
+    "asignatura": "Museos",
+    "ht": "3",
+    "hp": "1",
+    "cr": "3",
+    "prerequisitos": "ART2190 / CRI2190",
+    "equivalencias": "CRI3170"
+  },
+  {
+    "semester": "Sexto Semestre",
+    "clave": "ART-4240",
+    "asignatura": "Grabado II",
+    "ht": "2",
+    "hp": "2",
+    "cr": "3",
+    "prerequisitos": "ART4230 / PLA4230",
+    "equivalencias": "PLA4240"
+  },
+  {
+    "semester": "Sexto Semestre",
+    "clave": "ART-4290",
+    "asignatura": "Dibujo Del Natural II",
+    "ht": "3",
+    "hp": "3",
+    "cr": "4",
+    "prerequisitos": "ART4270 / PLA4270",
+    "equivalencias": "PLA4290"
+  },
+  {
+    "semester": "Sexto Semestre",
+    "clave": "ART-5220",
+    "asignatura": "Taller Creativo II",
+    "ht": "2",
+    "hp": "4",
+    "cr": "4",
+    "prerequisitos": "ART5210 / PLA5210",
+    "equivalencias": "PLA5220"
+  },
+  {
+    "semester": "Sexto Semestre",
+    "clave": "ART-5230",
+    "asignatura": "Pintura Mural I",
+    "ht": "2",
+    "hp": "2",
+    "cr": "3",
+    "prerequisitos": "ART4250 / PLA4250",
+    "equivalencias": "PLA5230"
+  },
+  {
+    "semester": "Sexto Semestre",
+    "clave": "ART-5260",
+    "asignatura": "Pintura IV",
+    "ht": "3",
+    "hp": "3",
+    "cr": "4",
+    "prerequisitos": "ART4250 / PLA4250",
+    "equivalencias": "PLA5260"
+  },
+  {
+    "semester": "Sexto Semestre",
+    "clave": "",
+    "asignatura": "",
+    "ht": "15",
+    "hp": "15",
+    "cr": "21",
+    "prerequisitos": "",
+    "equivalencias": ""
+  },
+  {
+    "semester": "Séptimo Semestre",
+    "clave": "ART-3110",
+    "asignatura": "Elaboración De Proy De Artes",
+    "ht": "2",
+    "hp": "2",
+    "cr": "3",
+    "prerequisitos": "FIL1240",
+    "equivalencias": "CRI3110"
+  },
+  {
+    "semester": "Séptimo Semestre",
+    "clave": "ART-4110",
+    "asignatura": "Met Y Tec De La Ed Artística",
+    "ht": "2",
+    "hp": "2",
+    "cr": "3",
+    "prerequisitos": "FIL1240",
+    "equivalencias": "CRI4110"
+  },
+  {
+    "semester": "Séptimo Semestre",
+    "clave": "ART-5240",
+    "asignatura": "Pintura Mural II",
+    "ht": "3",
+    "hp": "3",
+    "cr": "4",
+    "prerequisitos": "ART5230 / PLA5230",
+    "equivalencias": "PLA5240"
+  },
+  {
+    "semester": "Séptimo Semestre",
+    "clave": "",
+    "asignatura": "",
+    "ht": "7",
+    "hp": "7",
+    "cr": "10",
+    "prerequisitos": "",
+    "equivalencias": ""
+  },
+  {
+    "semester": "Tesis de Grado",
+    "clave": "ART-7420",
+    "asignatura": "Tesis De Grado O Curso Equival",
+    "ht": "0",
+    "hp": "0",
+    "cr": "8",
+    "prerequisitos": "",
+    "equivalencias": "PLA7420"
+  },
+  {
+    "semester": "Tesis de Grado",
+    "clave": "",
+    "asignatura": "",
+    "ht": "0",
+    "hp": "0",
+    "cr": "8",
+    "prerequisitos": "",
+    "equivalencias": ""
+  }
+]
