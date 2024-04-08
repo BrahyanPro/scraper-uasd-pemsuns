@@ -2,8 +2,10 @@
   "name": "scraperwew",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {},
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
