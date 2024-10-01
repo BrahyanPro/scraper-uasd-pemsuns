@@ -21,18 +21,27 @@ async function analyzeCareerData () {
   console.time('Tiempo de ejecución')
   const browser = await playwright.chromium.launch()
   const page = await browser.newPage()
-  await page.goto('https://soft.uasd.edu.do/planesgrado/')
 
-  const faculties = await extractFacultiesData(page)
-  const careerData = await extractCareerDetails(browser, faculties)
-
-  await browser.close()
-
-  const optimizedData = optimizeCareerDurations(careerData)
-  await saveAnalysisToFile(optimizedData)
-  printTopShortestCareers(optimizedData)
-
-  console.timeEnd('Tiempo de ejecución')
+  try {
+    await page.goto('https://soft.uasd.edu.do/planesgrado/')
+    console.log('Extrayendo datos de facultades...')
+    const faculties = await extractFacultiesData(page)
+    console.log('Extrayendo detalles de carreras...')
+    const careerData = await extractCareerDetails(browser, faculties)
+    console.log('Optimizando duración de carreras...')
+    const optimizedData = optimizeCareerDurations(careerData)
+    console.log('Guardando análisis en archivo...')
+    await saveAnalysisToFile(optimizedData)
+    console.log('Imprimiendo carreras más cortas...')
+    printTopShortestCareers(optimizedData)
+    console.log('Análisis completado.')
+  } catch (error) {
+    console.error('Error durante el análisis:', error)
+  } finally {
+    console.log('Cerrando el navegador...')
+    await browser.close()
+    console.timeEnd('Tiempo de ejecución')
+  }
 }
 
 async function extractFacultiesData (page) {
@@ -70,8 +79,12 @@ async function extractCareerDetails (browser, faculties) {
       console.log(`  Escuela: ${school.name}`)
       for (const career of school.careers) {
         console.log(`    Carrera: ${career.title}`)
-        const details = await getCareerDetails(browser, career, faculty.faculty, school.name)
-        careerData.push(details)
+        try {
+          const details = await getCareerDetails(browser, career, faculty.faculty, school.name)
+          careerData.push(details)
+        } catch (error) {
+          console.error(`Error al obtener detalles de ${career.title}:`, error)
+        }
       }
     }
   }
@@ -91,7 +104,8 @@ async function getCareerDetails (browser, career, facultyName, schoolName) {
       if (row.cells.length === 1) {
         currentSemester = row.innerText.trim()
       } else if (row.cells.length > 1) {
-        const [clave, asignatura, ht, hp, cr, prerequisitos] = Array.from(row.cells, cell => cell.innerText.trim())
+        const [clave, asignatura, _ht, _hp, cr, prerequisitos] = Array.from(row.cells, cell => cell.innerText.trim())
+        console.log('Actualmente en la', clave, asignatura, _ht, _hp, cr, prerequisitos)
         if (!isNaN(cr)) {
           subjects.push({
             semester: currentSemester,
