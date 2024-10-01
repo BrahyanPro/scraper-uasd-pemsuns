@@ -3,6 +3,32 @@ const fs = require('fs').promises
 const path = require('path')
 
 const folderPath = path.join(__dirname, 'carreras')
+const CACHE_FILE = path.join(__dirname, 'carreras', 'career_data_cache.json')
+
+async function saveCareerDataCache (careerData) {
+  try {
+    await fs.mkdir(path.dirname(CACHE_FILE), { recursive: true })
+    await fs.writeFile(CACHE_FILE, JSON.stringify(careerData, null, 2))
+    console.log('Datos de carreras guardados en caché.')
+  } catch (error) {
+    console.error('Error al guardar los datos en caché:', error)
+  }
+}
+
+async function loadCareerDataCache () {
+  try {
+    const data = await fs.readFile(CACHE_FILE, 'utf8')
+    console.log('Datos de carreras cargados desde caché.')
+    return JSON.parse(data)
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      console.log('No se encontró caché de datos de carreras.')
+    } else {
+      console.error('Error al cargar los datos desde caché:', error)
+    }
+    return null
+  }
+}
 
 const BASIC_CYCLE = [
   { name: 'Lengua Española II', credits: 3 },
@@ -19,29 +45,48 @@ const BASIC_CYCLE = [
 
 async function analyzeCareerData () {
   console.time('Tiempo de ejecución')
-  const browser = await playwright.chromium.launch()
-  const page = await browser.newPage()
 
-  try {
-    await page.goto('https://soft.uasd.edu.do/planesgrado/')
-    console.log('Extrayendo datos de facultades...')
-    const faculties = await extractFacultiesData(page)
-    console.log('Extrayendo detalles de carreras...')
-    const careerData = await extractCareerDetails(browser, faculties)
+  let careerData = await loadCareerDataCache()
+
+  if (!careerData) {
+    const browser = await playwright.chromium.launch()
+    const page = await browser.newPage()
+
+    try {
+      await page.goto('https://soft.uasd.edu.do/planesgrado/')
+
+      console.log('Extrayendo datos de facultades...')
+      const faculties = await extractFacultiesData(page)
+
+      console.log('Extrayendo detalles de carreras...')
+      careerData = await extractCareerDetails(browser, faculties)
+
+      console.log('Guardando datos de carreras en caché...')
+      await saveCareerDataCache(careerData)
+    } catch (error) {
+      console.error('Error durante la extracción de datos:', error)
+    } finally {
+      console.log('Cerrando el navegador...')
+      await browser.close()
+    }
+  }
+
+  if (careerData) {
     console.log('Optimizando duración de carreras...')
     const optimizedData = optimizeCareerDurations(careerData)
+
     console.log('Guardando análisis en archivo...')
     await saveAnalysisToFile(optimizedData)
+
     console.log('Imprimiendo carreras más cortas...')
     printTopShortestCareers(optimizedData)
+
     console.log('Análisis completado.')
-  } catch (error) {
-    console.error('Error durante el análisis:', error)
-  } finally {
-    console.log('Cerrando el navegador...')
-    await browser.close()
-    console.timeEnd('Tiempo de ejecución')
+  } else {
+    console.error('No se pudieron obtener los datos de las carreras.')
   }
+
+  console.timeEnd('Tiempo de ejecución')
 }
 
 async function extractFacultiesData (page) {
