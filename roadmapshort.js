@@ -118,6 +118,7 @@ async function getCareerDetails (browser, career, facultyName, schoolName) {
 }
 
 function optimizeCareerDurations (careerData) {
+  console.log(`Optimizando ${careerData.length} carreras...`)
   return careerData.map(career => {
     let remainingSubjects = [...BASIC_CYCLE, ...career.subjects]
     const completedSubjects = new Set()
@@ -192,12 +193,6 @@ function addSubjectToSemester (subject, semesterSubjects, completedSubjects) {
   }
 }
 
-async function saveAnalysisToFile (analysis) {
-  const filePath = path.join(folderPath, 'optimized_career_analysis.json')
-  await fs.writeFile(filePath, JSON.stringify(analysis, null, 2)).catch(console.error)
-  console.log(`Análisis guardado en: ${filePath}`)
-}
-
 function printTopShortestCareers (careerData) {
   const sortedCareers = careerData.sort((a, b) => a.optimizedYears - b.optimizedYears).slice(0, 15)
 
@@ -230,4 +225,17 @@ function padCenter (str, length) {
   return ' '.repeat(padLeft) + str + ' '.repeat(padRight)
 }
 
-analyzeCareerData().catch(console.error)
+async function saveAnalysisToFile (analysis) {
+  const filePath = path.join(folderPath, 'optimized_career_analysis.json')
+  await fs.mkdir(folderPath, { recursive: true })
+  await fs.writeFile(filePath, JSON.stringify(analysis, null, 2))
+  console.log(`Análisis guardado en: ${filePath}`)
+}
+
+analyzeCareerData().then(() => {
+  console.log('Proceso completado exitosamente.')
+}).catch(error => {
+  console.error('Error en el proceso principal:', error)
+}).finally(() => {
+  console.log('Programa terminado.')
+})
