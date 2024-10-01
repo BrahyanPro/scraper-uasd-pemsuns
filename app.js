@@ -116,4 +116,3 @@ const savePensumData = async (browser, carrera, data2) => {
 }
 
 extractCareerLinks().catch(console.error)
-// TODO Hacerlo mas optimo rendimiento actual por debajo de la media
