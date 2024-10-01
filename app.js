@@ -6,7 +6,6 @@ const folderPath = path.join(__dirname, 'carreras')
 fs.mkdir(folderPath, { recursive: true }).catch(console.error)
 
 async function extractCareerLinks () {
-
   // init count time
   console.time('time')
   const browser = await playwright.chromium.launch()
@@ -23,11 +22,11 @@ async function extractCareerLinks () {
         const schoolName = table.querySelector('.tvCarreras_0').innerText
         const nextSibling = table.nextElementSibling
         const careers = Array.from(
-          nextSibling.querySelectorAll('.tvCarreras_0[target="_blank"]')).
-          map(link => ({ title: link.innerText, url: link.href }))
+          nextSibling.querySelectorAll('.tvCarreras_0[target="_blank"]'))
+          .map(link => ({ title: link.innerText, url: link.href }))
         const data = {
           name: schoolName,
-          careers,
+          careers
         }
         schoolData.push(data)
       })
@@ -39,7 +38,7 @@ async function extractCareerLinks () {
       const schools = getSchoolsName(table.nextElementSibling)
       const faculty = {
         faculty: facultyName,
-        data: schools,
+        data: schools
       }
       data.push(faculty)
     })
@@ -59,15 +58,15 @@ async function extractCareerLinks () {
       for (const carrera of school.careers) {
         const data2 = {
           facultad: faculty,
-          escuela: school.name,
+          escuela: school.name
         }
         // console.log color yellow
         console.log('\x1b[33m%s\x1b[0m', `Guardando datos de la escuela ${data2.escuela}  ${data2.facultad}`)
         const { data, name } = await savePensumData(browser, carrera, data2)
 
         const filePath = path.join(facultyFolder, `${name}.json`)
-        await fs.writeFile(filePath, JSON.stringify(data, null, 2)).
-          catch(console.error)
+        await fs.writeFile(filePath, JSON.stringify(data, null, 2))
+          .catch(console.error)
         // console.log color blue
         console.log('\x1b[34m%s\x1b[0m', `Guardando datos de la carrera ${carrera.title}`)
       }
@@ -93,7 +92,7 @@ const savePensumData = async (browser, carrera, data2) => {
       } else if (row.cells.length > 1) {
         const [clave, asignatura, ht, hp, cr, prerequisitos, equivalencias] = Array.from(
           row.cells,
-          cell => cell.innerText.trim(),
+          cell => cell.innerText.trim()
         )
         if (!clave) continue
         tableData.push({
@@ -104,7 +103,7 @@ const savePensumData = async (browser, carrera, data2) => {
           horas_practicas: hp,
           creditos: cr,
           prerequisitos,
-          equivalencias,
+          equivalencias
         })
       }
     }
@@ -112,7 +111,7 @@ const savePensumData = async (browser, carrera, data2) => {
   })
   const dataReady = data.map(item => ({ ...item, ...data2 }))
   // Formatear el título de la carrera para el nombre del archivo
-  const title =  carrera.title.replace(/[-/]/g, '_').toLowerCase()
+  const title = carrera.title.replace(/[-/]/g, '_').toLowerCase()
   return { data: dataReady, name: title }
 }
 
