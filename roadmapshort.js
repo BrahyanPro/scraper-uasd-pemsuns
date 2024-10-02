@@ -202,8 +202,6 @@ function optimizeCareerDurations (careerData) {
   console.log(`Optimizando ${careerData.length} carreras...`)
   return careerData.map((career, index) => {
     console.log(`Optimizando carrera ${index + 1} de ${careerData.length}: ${career.title}`)
-
-    let basicCycleSubjects = career.subjects.filter(subject => subject.isBasicCycle)
     let careerSubjects = career.subjects.filter(subject => !subject.isBasicCycle)
     const completedSubjects = new Set()
     let semesters = 0
@@ -231,15 +229,8 @@ function optimizeCareerDurations (careerData) {
         addSubjectToSemester(subject, semesterSubjects, completedSubjects)
         semesterCredits += subject.credits
         totalCredits += subject.credits
-
-        if (subject.isBasicCycle) {
-          basicCycleSubjects = basicCycleSubjects.filter(s => s !== subject)
-          basicCycleCredits += subject.credits
-        } else {
-          careerSubjects = careerSubjects.filter(s => s !== subject)
-        }
-
-        availableSubjects = (basicCycleCredits < 10 ? basicCycleSubjects : [...basicCycleSubjects, ...careerSubjects])
+        careerSubjects = careerSubjects.filter(s => s !== subject)
+        availableSubjects = [...careerSubjects]
           .filter(s =>
             isSubjectAvailable(s, completedSubjects, career.subjectsMap) &&
             semesterCredits + s.credits <= maxCredits
