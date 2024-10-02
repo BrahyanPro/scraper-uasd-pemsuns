@@ -209,59 +209,42 @@ function optimizeCareerDurations (careerData) {
     let semesters = 0
     let basicCycleCredits = 0
     let totalCredits = 0
-    const maxSemesters = 60 // Límite máximo de semestres (20 años)
+    const maxSemesters = 60
 
     while ((basicCycleSubjects.length > 0 || careerSubjects.length > 0) && semesters < maxSemesters) {
       semesters++
       let semesterCredits = 0
       const semesterSubjects = []
 
-      const isSummerTerm = (semesters % 3) === 2
+      const isSummerTerm = (semesters % 3) === 0
       const maxCredits = isSummerTerm ? 12 : 30
       const maxSubjects = isSummerTerm ? 3 : Infinity
 
-      let availableSubjects = []
+      let availableSubjects = basicCycleCredits < 10 ? basicCycleSubjects : [...basicCycleSubjects, ...careerSubjects]
 
-      if (basicCycleCredits < 10) {
-        // Solo puede tomar materias del ciclo básico
-        availableSubjects = basicCycleSubjects.filter(subject =>
-          isSubjectAvailable(subject, completedSubjects, career.subjectsMap) &&
-          semesterCredits + subject.credits <= maxCredits
-        )
-      } else {
-        // Puede tomar materias de ciclo básico y de carrera
-        availableSubjects = basicCycleSubjects.concat(careerSubjects).filter(subject =>
-          isSubjectAvailable(subject, completedSubjects, career.subjectsMap) &&
-          semesterCredits + subject.credits <= maxCredits
-        )
-      }
+      availableSubjects = availableSubjects.filter(subject =>
+        isSubjectAvailable(subject, completedSubjects, career.subjectsMap) &&
+        semesterCredits + subject.credits <= maxCredits
+      )
 
       while (semesterCredits < maxCredits && semesterSubjects.length < maxSubjects && availableSubjects.length > 0) {
-        const availableSubject = availableSubjects.shift()
+        const subject = availableSubjects.shift()
+        addSubjectToSemester(subject, semesterSubjects, completedSubjects)
+        semesterCredits += subject.credits
+        totalCredits += subject.credits
 
-        addSubjectToSemester(availableSubject, semesterSubjects, completedSubjects)
-        semesterCredits += availableSubject.credits
-        totalCredits += availableSubject.credits
-
-        if (availableSubject.isBasicCycle) {
-          basicCycleSubjects = basicCycleSubjects.filter(s => s !== availableSubject)
-          basicCycleCredits += availableSubject.credits
+        if (subject.isBasicCycle) {
+          basicCycleSubjects = basicCycleSubjects.filter(s => s !== subject)
+          basicCycleCredits += subject.credits
         } else {
-          careerSubjects = careerSubjects.filter(s => s !== availableSubject)
+          careerSubjects = careerSubjects.filter(s => s !== subject)
         }
 
-        // Actualizar las asignaturas disponibles
-        if (basicCycleCredits < 10) {
-          availableSubjects = basicCycleSubjects.filter(subject =>
-            isSubjectAvailable(subject, completedSubjects, career.subjectsMap) &&
-            semesterCredits + subject.credits <= maxCredits
+        availableSubjects = (basicCycleCredits < 10 ? basicCycleSubjects : [...basicCycleSubjects, ...careerSubjects])
+          .filter(s =>
+            isSubjectAvailable(s, completedSubjects, career.subjectsMap) &&
+            semesterCredits + s.credits <= maxCredits
           )
-        } else {
-          availableSubjects = basicCycleSubjects.concat(careerSubjects).filter(subject =>
-            isSubjectAvailable(subject, completedSubjects, career.subjectsMap) &&
-            semesterCredits + subject.credits <= maxCredits
-          )
-        }
       }
 
       if (semesterSubjects.length === 0) {
