@@ -30,19 +30,6 @@ async function loadCareerDataCache () {
   }
 }
 
-const BASIC_CYCLE = [
-  { name: 'Lengua Española II', credits: 3 },
-  { name: 'Introducción a la Filosofía', credits: 3 },
-  { name: 'Introducción a las Ciencias Sociales', credits: 3 },
-  { name: 'Matemática Básica', credits: 4 },
-  { name: 'Física Básica', credits: 4 },
-  { name: 'Química Básica', credits: 3 },
-  { name: 'Biología Básica', credits: 2 },
-  { name: 'Orientación Institucional', credits: 1 },
-  { name: 'Fundamentos de Historia Social Dominicana', credits: 3 },
-  { name: 'Educación Física', credits: 2 }
-]
-
 async function analyzeCareerData () {
   console.time('Tiempo de ejecución')
 
@@ -177,9 +164,48 @@ async function getCareerDetails (browser, career, facultyName, schoolName) {
 }
 
 function processCareerData (careerData) {
+  const basicCycleNames = [
+    'Lengua Española II',
+    'Lengua Española Básica I',
+    'Lengua Española Básica II',
+    'Introducción a la Filosofía',
+    'Int A La Filosofía',
+    'Introducción a las Ciencias Sociales',
+    'Introd A Las Ciencias Sociales',
+    'Matemática Básica',
+    'Física Básica',
+    'Química Básica',
+    'Biología Básica',
+    'Orientación Institucional',
+    'Fundamentos de Historia Social Dominicana',
+    'Fund De His Social Dominicana',
+    'Educación Física',
+    'Educación Física I',
+    'Educación Física II'
+  ]
+
   return careerData.map(career => {
-    // Filtramos las asignaturas inválidas (las que no tienen código o nombre)
     const validSubjects = career.subjects.filter(subject => subject.code && subject.name)
+
+    // Crear mapa de asignaturas
+    const subjectsMap = new Map()
+
+    validSubjects.forEach(subject => {
+      if (subject.prerequisites) {
+        subject.prerequisites = subject.prerequisites.replace(/[\(\)]/g, '').trim().toUpperCase().replace(/\s+/g, '')
+      }
+      if (subject.code) {
+        subject.code = subject.code.trim().toUpperCase().replace(/\s+/g, '')
+      }
+      // Marcar si es parte del ciclo básico
+      if (basicCycleNames.includes(subject.name)) {
+        subject.isBasicCycle = true
+      } else {
+        subject.isBasicCycle = false
+      }
+      // Agregar al mapa
+      subjectsMap.set(subject.code, subject)
+    })
 
     // Calculamos el total de créditos y semestres correctamente
     const totalCredits = validSubjects.reduce((sum, subject) => sum + subject.credits, 0)
@@ -189,7 +215,8 @@ function processCareerData (careerData) {
       ...career,
       subjects: validSubjects,
       totalCredits,
-      semesters
+      semesters,
+      subjectsMap
     }
   })
 }
@@ -199,43 +226,70 @@ function optimizeCareerDurations (careerData) {
   return careerData.map((career, index) => {
     console.log(`Optimizando carrera ${index + 1} de ${careerData.length}: ${career.title}`)
 
-    let remainingSubjects = [...BASIC_CYCLE, ...career.subjects]
+    let basicCycleSubjects = career.subjects.filter(subject => subject.isBasicCycle)
+    let careerSubjects = career.subjects.filter(subject => !subject.isBasicCycle)
     const completedSubjects = new Set()
     let semesters = 0
     let basicCycleCredits = 0
     let totalCredits = 0
-    const maxSemesters = 20 // Límite máximo de semestres (10 años)
+    const maxSemesters = 60 // Límite máximo de semestres (20 años)
 
-    while (remainingSubjects.length > 0 && semesters < maxSemesters) {
+    while ((basicCycleSubjects.length > 0 || careerSubjects.length > 0) && semesters < maxSemesters) {
       semesters++
       let semesterCredits = 0
       const semesterSubjects = []
 
-      // Regular semester
-      const maxCredits = semesters % 3 !== 0 ? 30 : 12
-      const maxSubjects = semesters % 3 !== 0 ? Infinity : 3
+      const isSummerTerm = (semesters % 3) === 2
+      const maxCredits = isSummerTerm ? 12 : 30
+      const maxSubjects = isSummerTerm ? 3 : Infinity
 
-      while (semesterCredits < maxCredits && semesterSubjects.length < maxSubjects && remainingSubjects.length > 0) {
-        const availableSubject = remainingSubjects.find(subject =>
-          isSubjectAvailable(subject, completedSubjects) &&
+      let availableSubjects = []
+
+      if (basicCycleCredits < 10) {
+        // Solo puede tomar materias del ciclo básico
+        availableSubjects = basicCycleSubjects.filter(subject =>
+          isSubjectAvailable(subject, completedSubjects, career.subjectsMap) &&
           semesterCredits + subject.credits <= maxCredits
         )
+      } else {
+        // Puede tomar materias de ciclo básico y de carrera
+        availableSubjects = basicCycleSubjects.concat(careerSubjects).filter(subject =>
+          isSubjectAvailable(subject, completedSubjects, career.subjectsMap) &&
+          semesterCredits + subject.credits <= maxCredits
+        )
+      }
 
-        if (!availableSubject) break
+      while (semesterCredits < maxCredits && semesterSubjects.length < maxSubjects && availableSubjects.length > 0) {
+        const availableSubject = availableSubjects.shift()
 
         addSubjectToSemester(availableSubject, semesterSubjects, completedSubjects)
         semesterCredits += availableSubject.credits
         totalCredits += availableSubject.credits
-        remainingSubjects = remainingSubjects.filter(s => s !== availableSubject)
 
-        if (BASIC_CYCLE.some(bs => bs.name === availableSubject.name)) {
+        if (availableSubject.isBasicCycle) {
+          basicCycleSubjects = basicCycleSubjects.filter(s => s !== availableSubject)
           basicCycleCredits += availableSubject.credits
+        } else {
+          careerSubjects = careerSubjects.filter(s => s !== availableSubject)
+        }
+
+        // Actualizar las asignaturas disponibles
+        if (basicCycleCredits < 10) {
+          availableSubjects = basicCycleSubjects.filter(subject =>
+            isSubjectAvailable(subject, completedSubjects, career.subjectsMap) &&
+            semesterCredits + subject.credits <= maxCredits
+          )
+        } else {
+          availableSubjects = basicCycleSubjects.concat(careerSubjects).filter(subject =>
+            isSubjectAvailable(subject, completedSubjects, career.subjectsMap) &&
+            semesterCredits + subject.credits <= maxCredits
+          )
         }
       }
 
-      // Check if we can move to career subjects
-      if (basicCycleCredits >= 10 && remainingSubjects.every(s => !BASIC_CYCLE.some(bs => bs.name === s.name))) {
-        remainingSubjects = remainingSubjects.filter(s => !BASIC_CYCLE.some(bs => bs.name === s.name))
+      if (semesterSubjects.length === 0) {
+        console.log(`No se pudieron programar materias en el semestre ${semesters}. El estudiante no puede avanzar más.`)
+        break
       }
     }
 
@@ -245,16 +299,30 @@ function optimizeCareerDurations (careerData) {
   })
 }
 
-function isSubjectAvailable (subject, completedSubjects) {
-  if (!subject || !subject.prerequisites) return true
-  if (subject.prerequisites === '-') return true
-  return subject.prerequisites.split(',').every(prereq => completedSubjects.has(prereq.trim()))
+function isSubjectAvailable (subject, completedSubjects, subjectsMap) {
+  if (!subject || !subject.prerequisites || subject.prerequisites === '-' || subject.prerequisites === '') {
+    return true
+  }
+
+  const requirements = subject.prerequisites.split(',').map(req => req.trim().toUpperCase().replace(/\s+/g, ''))
+  return requirements.every(reqGroup => {
+    const alternatives = reqGroup.split('/').map(prereq => prereq.replace(/[()]/g, '').trim().toUpperCase().replace(/\s+/g, ''))
+    return alternatives.some(prereq => {
+      if (subjectsMap.has(prereq)) {
+        return completedSubjects.has(prereq)
+      } else {
+        console.warn(`Prerequisito ${prereq} no encontrado para la asignatura ${subject.code}`)
+        return false
+      }
+    })
+  })
 }
 
 function addSubjectToSemester (subject, semesterSubjects, completedSubjects) {
   semesterSubjects.push(subject)
   if (subject.code) {
-    completedSubjects.add(subject.code)
+    const code = subject.code.trim().toUpperCase().replace(/\s+/g, '')
+    completedSubjects.add(code)
   }
 }
 
