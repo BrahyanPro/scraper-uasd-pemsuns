@@ -260,20 +260,14 @@ function optimizeCareerDurations (careerData) {
 }
 
 function isSubjectAvailable (subject, completedSubjects, subjectsMap) {
-  if (!subject || !subject.prerequisites || subject.prerequisites === '-' || subject.prerequisites === '') {
+  if (!subject.prerequisites || subject.prerequisites === '-' || subject.prerequisites === '') {
     return true
   }
 
-  const requirements = subject.prerequisites.split(',').map(req => req.trim().toUpperCase().replace(/\s+/g, ''))
-  return requirements.every(reqGroup => {
-    const alternatives = reqGroup.split('/').map(prereq => prereq.replace(/[()]/g, '').trim().toUpperCase().replace(/\s+/g, ''))
-    return alternatives.some(prereq => {
-      if (subjectsMap.has(prereq)) {
-        return completedSubjects.has(prereq)
-      } else {
-        console.warn(`Prerequisito ${prereq} no encontrado para la asignatura ${subject.code}`)
-        return false
-      }
+  return subject.prerequisites.split(',').every(reqGroup => {
+    return reqGroup.split('/').some(prereq => {
+      const code = prereq.trim().toUpperCase()
+      return subjectsMap.has(code) && completedSubjects.has(code)
     })
   })
 }
