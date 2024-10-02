@@ -199,57 +199,37 @@ function optimizeCareerDurations (careerData) {
   return careerData.map((career, index) => {
     console.log(`Optimizando carrera ${index + 1} de ${careerData.length}: ${career.title}`)
 
-    // Usamos solo las asignaturas válidas
     let remainingSubjects = [...BASIC_CYCLE, ...career.subjects]
     const completedSubjects = new Set()
     let semesters = 0
     let basicCycleCredits = 0
-    let maxIterations = 1000 // Previene bucles infinitos
+    let totalCredits = 0
+    const maxSemesters = 20 // Límite máximo de semestres (10 años)
 
-    while (remainingSubjects.length > 0 && maxIterations > 0) {
+    while (remainingSubjects.length > 0 && semesters < maxSemesters) {
       semesters++
       let semesterCredits = 0
       const semesterSubjects = []
 
       // Regular semester
-      if (semesters % 3 !== 0) {
-        while (semesterCredits < 30 && remainingSubjects.length > 0 && maxIterations > 0) {
-          const availableSubject = remainingSubjects.find(subject =>
-            isSubjectAvailable(subject, completedSubjects) &&
-            semesterCredits + subject.credits <= 30
-          )
+      const maxCredits = semesters % 3 !== 0 ? 30 : 12
+      const maxSubjects = semesters % 3 !== 0 ? Infinity : 3
 
-          if (!availableSubject) break
+      while (semesterCredits < maxCredits && semesterSubjects.length < maxSubjects && remainingSubjects.length > 0) {
+        const availableSubject = remainingSubjects.find(subject =>
+          isSubjectAvailable(subject, completedSubjects) &&
+          semesterCredits + subject.credits <= maxCredits
+        )
 
-          addSubjectToSemester(availableSubject, semesterSubjects, completedSubjects)
-          semesterCredits += availableSubject.credits
-          remainingSubjects = remainingSubjects.filter(s => s !== availableSubject)
+        if (!availableSubject) break
 
-          if (BASIC_CYCLE.some(bs => bs.name === availableSubject.name)) {
-            basicCycleCredits += availableSubject.credits
-          }
+        addSubjectToSemester(availableSubject, semesterSubjects, completedSubjects)
+        semesterCredits += availableSubject.credits
+        totalCredits += availableSubject.credits
+        remainingSubjects = remainingSubjects.filter(s => s !== availableSubject)
 
-          maxIterations--
-        }
-      } else {
-        // Summer semester
-        while (semesterCredits < 12 && semesterSubjects.length < 3 && remainingSubjects.length > 0 && maxIterations > 0) {
-          const availableSubject = remainingSubjects.find(subject =>
-            isSubjectAvailable(subject, completedSubjects) &&
-            semesterCredits + subject.credits <= 12
-          )
-
-          if (!availableSubject) break
-
-          addSubjectToSemester(availableSubject, semesterSubjects, completedSubjects)
-          semesterCredits += availableSubject.credits
-          remainingSubjects = remainingSubjects.filter(s => s !== availableSubject)
-
-          if (BASIC_CYCLE.some(bs => bs.name === availableSubject.name)) {
-            basicCycleCredits += availableSubject.credits
-          }
-
-          maxIterations--
+        if (BASIC_CYCLE.some(bs => bs.name === availableSubject.name)) {
+          basicCycleCredits += availableSubject.credits
         }
       }
 
@@ -257,92 +237,13 @@ function optimizeCareerDurations (careerData) {
       if (basicCycleCredits >= 10 && remainingSubjects.every(s => !BASIC_CYCLE.some(bs => bs.name === s.name))) {
         remainingSubjects = remainingSubjects.filter(s => !BASIC_CYCLE.some(bs => bs.name === s.name))
       }
-
-      maxIterations--
-    }
-
-    if (maxIterations <= 0) {
-      console.warn(`Advertencia: Se alcanzó el máximo de iteraciones para la carrera ${career.title}`)
     }
 
     const years = (semesters / 3).toFixed(1)
-    return { ...career, optimizedSemesters: semesters, optimizedYears: parseFloat(years) }
+    console.log(`Carrera: ${career.title}, Semestres: ${semesters}, Años: ${years}, Créditos totales: ${totalCredits}`)
+    return { ...career, optimizedSemesters: semesters, optimizedYears: parseFloat(years), totalCredits }
   })
 }
-
-// function optimizeCareerDurations (careerData) {
-//  console.log(`Optimizando ${careerData.length} carreras...`)
-//  return careerData.map((career, index) => {
-//    console.log(`Optimizando carrera ${index + 1} de ${careerData.length}: ${career.title}`)
-//    let remainingSubjects = [...BASIC_CYCLE, ...(career.subjects || [])]
-//    const completedSubjects = new Set()
-//    let semesters = 0
-//    let basicCycleCredits = 0
-//    let maxIterations = 1000 // Previene bucles infinitos
-
-//    while (remainingSubjects.length > 0 && maxIterations > 0) {
-//      semesters++
-//      let semesterCredits = 0
-//      const semesterSubjects = []
-
-//      // Regular semester
-//      if (semesters % 3 !== 0) {
-//        while (semesterCredits < 30 && remainingSubjects.length > 0 && maxIterations > 0) {
-//          const availableSubject = remainingSubjects.find(subject =>
-//            isSubjectAvailable(subject, completedSubjects) &&
-//            semesterCredits + (subject.credits || 0) <= 30
-//          )
-
-//          if (!availableSubject) break
-
-//          addSubjectToSemester(availableSubject, semesterSubjects, completedSubjects)
-//          semesterCredits += availableSubject.credits || 0
-//          remainingSubjects = remainingSubjects.filter(s => s !== availableSubject)
-
-//          if (BASIC_CYCLE.some(bs => bs.name === availableSubject.name)) {
-//            basicCycleCredits += availableSubject.credits || 0
-//          }
-
-//          maxIterations--
-//        }
-//      } else {
-//        // Summer semester
-//        while (semesterCredits < 12 && semesterSubjects.length < 3 && remainingSubjects.length > 0 && maxIterations > 0) {
-//          const availableSubject = remainingSubjects.find(subject =>
-//            isSubjectAvailable(subject, completedSubjects) &&
-//            semesterCredits + (subject.credits || 0) <= 12
-//          )
-
-//          if (!availableSubject) break
-
-//          addSubjectToSemester(availableSubject, semesterSubjects, completedSubjects)
-//          semesterCredits += availableSubject.credits || 0
-//          remainingSubjects = remainingSubjects.filter(s => s !== availableSubject)
-
-//          if (BASIC_CYCLE.some(bs => bs.name === availableSubject.name)) {
-//            basicCycleCredits += availableSubject.credits || 0
-//          }
-
-//          maxIterations--
-//        }
-//      }
-
-//      // Check if we can move to career subjects
-//      if (basicCycleCredits >= 10 && remainingSubjects.every(s => !BASIC_CYCLE.some(bs => bs.name === s.name))) {
-//        remainingSubjects = remainingSubjects.filter(s => !BASIC_CYCLE.some(bs => bs.name === s.name))
-//      }
-
-//      maxIterations--
-//    }
-
-//    if (maxIterations <= 0) {
-//      console.warn(`Advertencia: Se alcanzó el máximo de iteraciones para la carrera ${career.title}`)
-//    }
-
-//    const years = (semesters / 3).toFixed(1)
-//    return { ...career, optimizedSemesters: semesters, optimizedYears: parseFloat(years) }
-//  })
-// }
 
 function isSubjectAvailable (subject, completedSubjects) {
   if (!subject || !subject.prerequisites) return true
