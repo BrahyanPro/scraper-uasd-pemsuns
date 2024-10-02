@@ -165,49 +165,26 @@ async function getCareerDetails (browser, career, facultyName, schoolName) {
 
 function processCareerData (careerData) {
   const basicCycleNames = [
-    'Lengua Española II',
     'Lengua Española Básica I',
     'Lengua Española Básica II',
-    'Introducción a la Filosofía',
     'Int A La Filosofía',
-    'Introducción a las Ciencias Sociales',
     'Introd A Las Ciencias Sociales',
-    'Matemática Básica',
-    'Física Básica',
-    'Química Básica',
-    'Biología Básica',
     'Orientación Institucional',
-    'Fundamentos de Historia Social Dominicana',
-    'Fund De His Social Dominicana',
-    'Educación Física',
-    'Educación Física I',
-    'Educación Física II'
+    'Fund De His Social Dominicana'
   ]
 
   return careerData.map(career => {
     const validSubjects = career.subjects.filter(subject => subject.code && subject.name)
 
-    // Crear mapa de asignaturas
     const subjectsMap = new Map()
 
     validSubjects.forEach(subject => {
-      if (subject.prerequisites) {
-        subject.prerequisites = subject.prerequisites.replace(/[\(\)]/g, '').trim().toUpperCase().replace(/\s+/g, '')
-      }
-      if (subject.code) {
-        subject.code = subject.code.trim().toUpperCase().replace(/\s+/g, '')
-      }
-      // Marcar si es parte del ciclo básico
-      if (basicCycleNames.includes(subject.name)) {
-        subject.isBasicCycle = true
-      } else {
-        subject.isBasicCycle = false
-      }
-      // Agregar al mapa
+      subject.prerequisites = subject.prerequisites ? subject.prerequisites.replace(/[()]/g, '').trim().toUpperCase() : ''
+      subject.code = subject.code.trim().toUpperCase()
+      subject.isBasicCycle = basicCycleNames.includes(subject.name)
       subjectsMap.set(subject.code, subject)
     })
 
-    // Calculamos el total de créditos y semestres correctamente
     const totalCredits = validSubjects.reduce((sum, subject) => sum + subject.credits, 0)
     const semesters = new Set(validSubjects.map(subject => subject.semester)).size
 
