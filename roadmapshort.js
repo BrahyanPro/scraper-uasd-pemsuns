@@ -207,11 +207,10 @@ function optimizeCareerDurations (careerData) {
     let careerSubjects = career.subjects.filter(subject => !subject.isBasicCycle)
     const completedSubjects = new Set()
     let semesters = 0
-    let basicCycleCredits = 0
     let totalCredits = 0
-    const maxSemesters = 60
+    const maxSemesters = 20 // limite maximo de semestres (10 años)
 
-    while ((basicCycleSubjects.length > 0 || careerSubjects.length > 0) && semesters < maxSemesters) {
+    while (careerSubjects.length > 0 && semesters < maxSemesters) {
       semesters++
       let semesterCredits = 0
       const semesterSubjects = []
@@ -220,7 +219,7 @@ function optimizeCareerDurations (careerData) {
       const maxCredits = isSummerTerm ? 12 : 30
       const maxSubjects = isSummerTerm ? 3 : Infinity
 
-      let availableSubjects = basicCycleCredits < 10 ? basicCycleSubjects : [...basicCycleSubjects, ...careerSubjects]
+      let availableSubjects = [...careerSubjects]
 
       availableSubjects = availableSubjects.filter(subject =>
         isSubjectAvailable(subject, completedSubjects, career.subjectsMap) &&
