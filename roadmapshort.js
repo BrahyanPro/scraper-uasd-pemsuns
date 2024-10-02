@@ -274,10 +274,7 @@ function isSubjectAvailable (subject, completedSubjects, subjectsMap) {
 
 function addSubjectToSemester (subject, semesterSubjects, completedSubjects) {
   semesterSubjects.push(subject)
-  if (subject.code) {
-    const code = subject.code.trim().toUpperCase().replace(/\s+/g, '')
-    completedSubjects.add(code)
-  }
+  completedSubjects.add(subject.code)
 }
 
 function printTopShortestCareers (careerData) {
