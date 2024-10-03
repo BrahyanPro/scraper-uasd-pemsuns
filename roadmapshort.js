@@ -164,7 +164,7 @@ async function getCareerDetails (browser, career, facultyName, schoolName) {
 }
 
 function printTopShortestCareers (careerData) {
-  const sortedCareers = careerData.sort((a, b) => a.optimizedYears - b.optimizedYears).slice(0, 15)
+  const sortedCareers = careerData.sort((a, b) => a.optimizedYears - b.optimizedYears).slice(0, 80)
 
   console.log('\n\x1b[1mLas 15 carreras de menor duración (optimizadas):\x1b[0m')
   console.log('╔════════════════════════════════════════════════════════════════╦══════════════════════╦══════════════════════╦═══════════╦═══════╗')
@@ -173,7 +173,7 @@ function printTopShortestCareers (careerData) {
 
   sortedCareers.forEach((career, index) => {
     console.log(
-      `║ ${padRight(career.title, 60)} ║ ${padRight(career.faculty, 20)} ║ ${padRight(career.school, 20)} ║ ${padCenter(career.optimizedSemesters.toString(), 9)} ║ ${padCenter(career.optimizedYears.toString(), 5)} ║`
+      `║ ${padRight(career.title, 50)} ║ ${padRight(career.faculty, 20)} ║ ${padRight(career.school, 20)} ║ ${padCenter(career.optimizedSemesters.toString(), 9)} ║ ${padCenter(career.optimizedYears.toString(), 5)} ║`
     )
 
     if (index < sortedCareers.length - 1) {
