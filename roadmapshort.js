@@ -163,110 +163,6 @@ async function getCareerDetails (browser, career, facultyName, schoolName) {
   }
 }
 
-function processCareerData (careerData) {
-  const basicCycleNames = [
-    'Lengua Española Básica I',
-    'Lengua Española Básica II',
-    'Int A La Filosofía',
-    'Introd A Las Ciencias Sociales',
-    'Orientación Institucional',
-    'Fund De His Social Dominicana'
-  ]
-
-  return careerData.map(career => {
-    const validSubjects = career.subjects.filter(subject => subject.code && subject.name)
-
-    const subjectsMap = new Map()
-
-    validSubjects.forEach(subject => {
-      subject.prerequisites = subject.prerequisites ? subject.prerequisites.replace(/[()]/g, '').trim().toUpperCase() : ''
-      subject.code = subject.code.trim().toUpperCase()
-      subject.isBasicCycle = basicCycleNames.includes(subject.name)
-      subjectsMap.set(subject.code, subject)
-    })
-
-    const totalCredits = validSubjects.reduce((sum, subject) => sum + subject.credits, 0)
-    const semesters = new Set(validSubjects.map(subject => subject.semester)).size
-
-    return {
-      ...career,
-      subjects: validSubjects,
-      totalCredits,
-      semesters,
-      subjectsMap
-    }
-  })
-}
-
-function optimizeCareerDurations (careerData) {
-  console.log(`Optimizando ${careerData.length} carreras...`)
-  return careerData.map((career, index) => {
-    console.log(`Optimizando carrera ${index + 1} de ${careerData.length}: ${career.title}`)
-    let careerSubjects = career.subjects.filter(subject => !subject.isBasicCycle)
-    const completedSubjects = new Set()
-    let semesters = 0
-    let totalCredits = 0
-    const maxSemesters = 20 // limite maximo de semestres (10 años)
-
-    while (careerSubjects.length > 0 && semesters < maxSemesters) {
-      semesters++
-      let semesterCredits = 0
-      const semesterSubjects = []
-
-      const isSummerTerm = (semesters % 3) === 0
-      const maxCredits = isSummerTerm ? 12 : 30
-      const maxSubjects = isSummerTerm ? 3 : Infinity
-
-      let availableSubjects = [...careerSubjects]
-
-      availableSubjects = availableSubjects.filter(subject =>
-        isSubjectAvailable(subject, completedSubjects, career.subjectsMap) &&
-        semesterCredits + subject.credits <= maxCredits
-      )
-
-      while (semesterCredits < maxCredits && semesterSubjects.length < maxSubjects && availableSubjects.length > 0) {
-        const subject = availableSubjects.shift()
-        addSubjectToSemester(subject, semesterSubjects, completedSubjects)
-        semesterCredits += subject.credits
-        totalCredits += subject.credits
-        careerSubjects = careerSubjects.filter(s => s !== subject)
-        availableSubjects = [...careerSubjects]
-          .filter(s =>
-            isSubjectAvailable(s, completedSubjects, career.subjectsMap) &&
-            semesterCredits + s.credits <= maxCredits
-          )
-      }
-
-      if (semesterSubjects.length === 0) {
-        console.log(`No se pudieron programar materias en el semestre ${semesters}. El estudiante no puede avanzar más.`)
-        break
-      }
-    }
-
-    const years = (semesters / 3).toFixed(1)
-    console.log(`Carrera: ${career.title}, Semestres: ${semesters}, Años: ${years}, Créditos totales: ${totalCredits}`)
-    return { ...career, optimizedSemesters: semesters, optimizedYears: parseFloat(years), totalCredits }
-  })
-}
-
-function isSubjectAvailable (subject, completedSubjects, subjectsMap) {
-  if (!subject.prerequisites || subject.prerequisites === '-' || subject.prerequisites === '') {
-    return true
-  }
-
-  return subject.prerequisites.split(',').every(reqGroup => {
-    return reqGroup.split('/').some(prereq => {
-      const code = prereq.trim().toUpperCase()
-      return subjectsMap.has(code) && completedSubjects.has(code)
-    })
-  })
-}
-
-function addSubjectToSemester (subject, semesterSubjects, completedSubjects) {
-  semesterSubjects.push(subject)
-  completedSubjects.add(subject.code)
-}
-
 function printTopShortestCareers (careerData) {
   const sortedCareers = careerData.sort((a, b) => a.optimizedYears - b.optimizedYears).slice(0, 15)
 
@@ -305,7 +201,111 @@ async function saveAnalysisToFile (analysis) {
   await fs.writeFile(filePath, JSON.stringify(analysis, null, 2))
   console.log(`Análisis guardado en: ${filePath}`)
 }
+function processCareerData (careerData) {
+  return careerData.map(career => {
+    const validSubjects = career.subjects.filter(subject => subject.code && subject.name && subject.credits > 0)
 
+    const subjectsMap = new Map()
+
+    validSubjects.forEach(subject => {
+      subject.prerequisites = subject.prerequisites ? subject.prerequisites.replace(/[()]/g, '').trim().toUpperCase() : ''
+      subject.code = subject.code.trim().toUpperCase()
+      subjectsMap.set(subject.code, subject)
+    })
+
+    const totalCredits = validSubjects.reduce((sum, subject) => sum + subject.credits, 0)
+
+    return {
+      ...career,
+      subjects: validSubjects,
+      totalCredits,
+      subjectsMap
+    }
+  })
+}
+
+function optimizeCareerDurations (careerData) {
+  console.log(`Optimizando ${careerData.length} carreras...`)
+  return careerData.map((career, index) => {
+    console.log(`Optimizando carrera ${index + 1} de ${careerData.length}: ${career.title}`)
+
+    let subjects = career.subjects.slice()
+    const completedSubjects = new Set()
+    let semesters = 0
+    let totalCredits = 0
+    const maxSemesters = 20 // Límite máximo de semestres (10 años)
+
+    while (subjects.length > 0 && semesters < maxSemesters) {
+      semesters++
+      let semesterCredits = 0
+      const semesterSubjects = []
+
+      const maxCredits = 30
+
+      let availableSubjects = subjects.filter(subject =>
+        isSubjectAvailable(subject, completedSubjects, career.subjectsMap) &&
+        semesterCredits + subject.credits <= maxCredits
+      )
+
+      // Manejar asignaturas optativas
+      const optativeSubjects = availableSubjects.filter(subject => subject.name.includes('Optativa'))
+      if (optativeSubjects.length > 0) {
+        const optativeToTake = optativeSubjects.slice(0, 2) // Tomar hasta 2 optativas
+        optativeToTake.forEach(subject => {
+          if (semesterCredits + subject.credits <= maxCredits) {
+            addSubjectToSemester(subject, semesterSubjects, completedSubjects)
+            semesterCredits += subject.credits
+            totalCredits += subject.credits
+            subjects = subjects.filter(s => s !== subject)
+            availableSubjects = availableSubjects.filter(s => s !== subject)
+          }
+        })
+      }
+
+      while (semesterCredits < maxCredits && availableSubjects.length > 0) {
+        const subject = availableSubjects.shift()
+        addSubjectToSemester(subject, semesterSubjects, completedSubjects)
+        semesterCredits += subject.credits
+        totalCredits += subject.credits
+        subjects = subjects.filter(s => s !== subject)
+
+        availableSubjects = subjects.filter(s =>
+          isSubjectAvailable(s, completedSubjects, career.subjectsMap) &&
+          semesterCredits + s.credits <= maxCredits
+        )
+      }
+
+      if (semesterSubjects.length === 0) {
+        console.log(`No se pudieron programar materias en el semestre ${semesters}. El estudiante no puede avanzar más.`)
+        break
+      }
+    }
+
+    const years = (semesters / 2).toFixed(1)
+    console.log(`Carrera: ${career.title}, Semestres: ${semesters}, Años: ${years}, Créditos totales: ${totalCredits}`)
+    return { ...career, optimizedSemesters: semesters, optimizedYears: parseFloat(years), totalCredits }
+  })
+}
+
+function isSubjectAvailable (subject, completedSubjects, subjectsMap) {
+  if (!subject.prerequisites || subject.prerequisites === '-' || subject.prerequisites === '') {
+    return true
+  }
+
+  return subject.prerequisites.split(',').every(reqGroup => {
+    return reqGroup.split('/').some(prereq => {
+      const code = prereq.trim().toUpperCase()
+      return !subjectsMap.has(code) || completedSubjects.has(code)
+    })
+  })
+}
+
+function addSubjectToSemester (subject, semesterSubjects, completedSubjects) {
+  semesterSubjects.push(subject)
+  completedSubjects.add(subject.code)
+}
+
+// Ejecutar el análisis
 analyzeCareerData().then(() => {
   console.log('Proceso completado exitosamente.')
 }).catch(error => {
